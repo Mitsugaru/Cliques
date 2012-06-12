@@ -123,7 +123,12 @@ public class Commander implements CommandExecutor
 			}
 			default:
 			{
-				// TODO show help
+				if(args[0].equals("?"))
+				{
+					showHelp(sender);
+					return true;
+				}
+				// TODO bad command
 				return false;
 			}
 		}
@@ -161,8 +166,14 @@ public class Commander implements CommandExecutor
 				// TODO force remove specified player from clique
 				break;
 			}
+			case HELP:
+			{
+				//TODO show admin help
+				break;
+			}
 			default:
 			{
+				
 				// TODO tell player invalid command
 			}
 		}
