@@ -1,0 +1,23 @@
+name: Cliques
+main: com.mitsugaru.Cliques.Cliques
+version: 0.01
+description: Player group interaction system
+authors:
+  - Mitsugaru
+softdepend: [Vault]
+commands:
+  clique:
+     description: Root command for Cliques
+     usage: /clique <param> - Show help on Cliques
+permissions:
+   Cliques.*:
+     description: Give access to all Cliques permission nodes
+     children:
+        Cliques.admin.reload: true
+   Cliques.admin.*:
+     description: Give access to all admin permission nodes
+     children:
+        Cliques.admin.reload: true
+   Cliques.admin.reload:
+     description: Allow reload command
+     default: op
