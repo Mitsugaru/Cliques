@@ -1,11 +1,23 @@
 package com.mitsugaru.Cliques.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import com.mitsugaru.Cliques.Cliques;
+import com.mitsugaru.Cliques.permissions.PermissionHandler;
+import com.mitsugaru.Cliques.permissions.PermissionNode;
+
 public class Commander implements CommandExecutor
 {
+	private Cliques plugin;
+	private final static String BAR = "======================";
+
+	public Commander(Cliques cliques)
+	{
+		this.plugin = cliques;
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
@@ -13,7 +25,7 @@ public class Commander implements CommandExecutor
 	{
 		if (args.length == 0)
 		{
-			// TODO show help
+			// show player's information
 			return true;
 		}
 		try
@@ -34,6 +46,12 @@ public class Commander implements CommandExecutor
 	{
 		switch (com)
 		{
+			case HELP:
+			{
+				// show help
+				showHelp(sender);
+				break;
+			}
 			case CREATE:
 			{
 				// TODO create clique
@@ -67,7 +85,7 @@ public class Commander implements CommandExecutor
 			}
 			case PVP:
 			{
-				//TODO modify self pvp toggle if pvp is disabled for the clique
+				// TODO modify self pvp toggle if pvp is disabled for the clique
 				break;
 			}
 			case EDIT:
@@ -80,18 +98,27 @@ public class Commander implements CommandExecutor
 				// TODO parse admin command
 				try
 				{
-					final ValidCommands adminCom = ValidCommands.valueOf(args[1]
-							.toLowerCase());
+					final ValidCommands adminCom = ValidCommands
+							.valueOf(args[1].toLowerCase());
 					return parseAdminCommand(adminCom, sender, args);
 				}
 				catch (IllegalArgumentException ia)
 				{
 					// TODO tell sender invalid admin command
 				}
-				catch(ArrayIndexOutOfBoundsException aioob)
+				catch (ArrayIndexOutOfBoundsException aioob)
 				{
-					//TODO show admin help
+					// TODO show admin help
 				}
+				break;
+			}
+			case VER:
+			{
+				// Rollover to the version section
+			}
+			case VERSION:
+			{
+				showVersion(sender);
 				break;
 			}
 			default:
@@ -106,10 +133,32 @@ public class Commander implements CommandExecutor
 	private boolean parseAdminCommand(ValidCommands com, CommandSender sender,
 			String[] args)
 	{
-		switch(com)
+		switch (com)
 		{
 			case RELOAD:
 			{
+				if (PermissionHandler.has(sender, PermissionNode.ADMIN_RELOAD))
+				{
+					plugin.getRootConfig().reloadConfig();
+					sender.sendMessage(ChatColor.GREEN + Cliques.TAG
+							+ " Config reloaded");
+				}
+				else
+				{
+					sender.sendMessage(ChatColor.RED + Cliques.TAG
+							+ " Lack permssion: "
+							+ PermissionNode.ADMIN_RELOAD.getNode());
+				}
+				break;
+			}
+			case DELETE:
+			{
+				// TODO delete clique
+				break;
+			}
+			case KICK:
+			{
+				// TODO force remove specified player from clique
 				break;
 			}
 			default:
@@ -118,5 +167,28 @@ public class Commander implements CommandExecutor
 			}
 		}
 		return true;
+	}
+
+	private void showVersion(CommandSender sender)
+	{
+		sender.sendMessage(ChatColor.BLUE + BAR + "=====");
+		sender.sendMessage(ChatColor.GREEN + Cliques.TAG + " v"
+				+ plugin.getDescription().getVersion());
+		sender.sendMessage(ChatColor.GREEN + "Coded by Mitsugaru");
+		sender.sendMessage(ChatColor.BLUE + "===========" + ChatColor.GRAY
+				+ "Config" + ChatColor.BLUE + "===========");
+		sender.sendMessage(ChatColor.GRAY + "Clique invite only on create: "
+				+ !plugin.getRootConfig().cliquePublicOnCreate);
+		sender.sendMessage(ChatColor.GRAY + "Clique pvp disabled on create: "
+				+ plugin.getRootConfig().cliquePVPGuard);
+	}
+
+	private void showHelp(CommandSender sender)
+	{
+		sender.sendMessage(ChatColor.WHITE + "=====" + ChatColor.GREEN
+				+ "Cliques" + ChatColor.WHITE + "=====");
+		// TODO show help based on permissions
+		sender.sendMessage(ChatColor.AQUA + "/clique help" + ChatColor.GOLD
+				+ " : Show help menu");
 	}
 }

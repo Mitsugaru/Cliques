@@ -14,7 +14,7 @@ import com.mitsugaru.Cliques.Cliques;
  * @author Mitsugaru
  * 
  */
-public class PermCheck
+public class PermissionHandler
 {
 	private static Permission perm;
 	private static boolean hasVault;
@@ -38,10 +38,10 @@ public class PermCheck
 		}
 	}
 
-	public static boolean checkPermission(CommandSender sender,
+	public static boolean has(CommandSender sender,
 			PermissionNode node)
 	{
-		return checkPermission(sender, node.getNode());
+		return has(sender, node.getNode());
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class PermCheck
 	 *            node to check, as String
 	 * @return true if sender has the node, else false
 	 */
-	public static boolean checkPermission(CommandSender sender, String node)
+	public static boolean has(CommandSender sender, String node)
 	{
 		// Use vault if we have it
 		if (hasVault && perm != null)

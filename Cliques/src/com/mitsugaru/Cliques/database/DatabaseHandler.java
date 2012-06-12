@@ -4,6 +4,7 @@ import com.mitsugaru.Cliques.Cliques;
 import com.mitsugaru.Cliques.config.RootConfig;
 import com.mitsugaru.Cliques.database.SQLibrary.MySQL;
 import com.mitsugaru.Cliques.database.SQLibrary.SQLite;
+import com.mitsugaru.Cliques.database.SQLibrary.Database.Query;
 
 public class DatabaseHandler
 {
@@ -89,5 +90,67 @@ public class DatabaseHandler
 	private void importSQL()
 	{
 		// TODO import
+	}
+	
+	public boolean checkConnection()
+	{
+		boolean connected = false;
+		if (useMySQL)
+		{
+			connected = mysql.checkConnection();
+		}
+		else
+		{
+			connected = sqlite.checkConnection();
+		}
+		return connected;
+	}
+
+	public void close()
+	{
+		if (useMySQL)
+		{
+			mysql.close();
+		}
+		else
+		{
+			sqlite.close();
+		}
+	}
+
+	public Query select(String query)
+	{
+		if (useMySQL)
+		{
+			return mysql.select(query);
+		}
+		else
+		{
+			return sqlite.select(query);
+		}
+	}
+
+	public void standardQuery(String query)
+	{
+		if (useMySQL)
+		{
+			mysql.standardQuery(query);
+		}
+		else
+		{
+			sqlite.standardQuery(query);
+		}
+	}
+
+	public void createTable(String query)
+	{
+		if (useMySQL)
+		{
+			mysql.createTable(query);
+		}
+		else
+		{
+			sqlite.createTable(query);
+		}
 	}
 }
