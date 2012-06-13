@@ -51,7 +51,7 @@ public class DatabaseHandler
 				plugin.getLogger().info("Created cliques table");
 				mysql.createTable("CREATE TABLE "
 						+ Table.CLIQUES.getName()
-						+ " (id INT UNSIGNED NOT NULL AUTO_INCREMENT, name TEXT NOT NULL, members TEXT NOT NULL, chatprefix TEXT, invite INT NOT NULL, pvp INT NOT NULL, broadcast INT NOT NULL, PRIMARY KEY(id), UNQIUE(name));");
+						+ " (id INT UNSIGNED NOT NULL AUTO_INCREMENT, cliquename TEXT NOT NULL, cliquemembers TEXT NOT NULL, chatprefix TEXT, invite INT NOT NULL, pvp INT NOT NULL, broadcast INT NOT NULL, PRIMARY KEY(id), UNIQUE(UNIQUE(cliquename)));");
 			}
 			if (!mysql.checkTable(Table.NEWS.getName()))
 			{
@@ -77,7 +77,7 @@ public class DatabaseHandler
 				plugin.getLogger().info("Created cliques table");
 				sqlite.createTable("CREATE TABLE "
 						+ Table.CLIQUES.getName()
-						+ " (id INTEGER PRIMARY KEY, name TEXT NOT NULL, members TEXT NOT NULL, chatprefix TEXT, invite INTEGER NOT NULL, pvp INTEGER NOT NULL, broadcast INTEGER NOT NULL, UNQIUE(name));");
+						+ " (id INTEGER PRIMARY KEY, cliquename TEXT NOT NULL, cliquemembers TEXT NOT NULL, chatprefix TEXT, invite INTEGER NOT NULL, pvp INTEGER NOT NULL, broadcast INTEGER NOT NULL, UNIQUE(cliquename));");
 			}
 			if (!sqlite.checkTable(Table.NEWS.getName()))
 			{

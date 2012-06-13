@@ -5,7 +5,7 @@ public enum Field
 	PLAYERNAME(Table.PLAYERS, "playername", Type.STRING), PLAYER_CLIQUES(
 			Table.PLAYERS, "cliques", Type.STRING), PLAYER_ACTIVE(
 			Table.PLAYERS, "active", Type.INTEGER), CLIQUE_NAME(Table.CLIQUES,
-			"name", Type.STRING), CLIQUE_MEMBERS(Table.CLIQUES, "members",
+			"cliquename", Type.STRING), CLIQUE_MEMBERS(Table.CLIQUES, "cliquemembers",
 			Type.STRING), CLIQUE_PREFIX(Table.CLIQUES, "chatprefix",
 			Type.STRING), CLIQUE_INVITE(Table.CLIQUES, "invite", Type.INTEGER), CLIQUE_PVP(
 			Table.CLIQUES, "pvp", Type.INTEGER), CLIQUES_BROADCAST(

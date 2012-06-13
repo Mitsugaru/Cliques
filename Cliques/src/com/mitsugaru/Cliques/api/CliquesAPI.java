@@ -1,7 +1,6 @@
 package com.mitsugaru.Cliques.api;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,7 +55,8 @@ public class CliquesAPI
 					+ Field.CLIQUES_BROADCAST.getColumnName()
 					+ ") VALUES(?,?,?,?,?);");
 			statement.setString(1, clique);
-			statement.setString(2, "" + getPlayerID(creator));
+			final int playerID = getPlayerID(creator);
+			statement.setString(2, "" + playerID);
 			statement.setInt(3,
 					booleanToInt(!plugin.getRootConfig().cliquePublicOnCreate));
 			statement.setInt(4,
@@ -68,7 +68,6 @@ public class CliquesAPI
 			statement.close();
 			// Add player to newly made clique
 			final int cliqueID = getCliqueID(clique);
-			final int playerID = getPlayerID(creator);
 			final Set<String> playerSet = getCliquesOfPlayer(creator);
 			String playerCliques = "";
 			if (playerSet.isEmpty())
@@ -123,6 +122,7 @@ public class CliquesAPI
 								+ creator + ")");
 				pid.printStackTrace();
 			}
+			addPlayer(creator);
 		}
 		return created;
 	}
@@ -144,21 +144,25 @@ public class CliquesAPI
 		try
 		{
 			// Create query
-			final PreparedStatement statement = database.prepare("SELECT "
+			final Query query = database.select("SELECT "
 					+ Field.CLIQUE_NAME.getColumnName() + " FROM "
-					+ Table.CLIQUES.getName() + " WHERE ucase("
-					+ Field.CLIQUE_NAME.getColumnName() + ")=?;");
-			statement.setString(1, clique.toUpperCase());
+					+ Table.CLIQUES.getName() + ";");
 			// Get result set
-			final ResultSet rs = statement.getResultSet();
-			if (rs.next())
+			if (query.getResult().next())
 			{
-				// We have entries
-				has = true;
+				do
+				{
+					// We have entries
+					if (clique.equalsIgnoreCase(query.getResult().getString(
+							Field.CLIQUE_NAME.getColumnName())))
+					{
+						has = true;
+						break;
+					}
+				} while (query.getResult().next());
 			}
 			// Close database objects
-			rs.close();
-			statement.close();
+			query.closeQuery();
 		}
 		catch (SQLException sql)
 		{
@@ -301,29 +305,26 @@ public class CliquesAPI
 		try
 		{
 			// Create query
-			final PreparedStatement statement = database
-					.prepare("SELECT * FROM " + Table.CLIQUES.getName()
-							+ " WHERE ucase("
-							+ Field.CLIQUE_NAME.getColumnName() + ")=?;");
-			statement.setString(1, clique.toUpperCase());
+			final Query query = database.select("SELECT * FROM "
+					+ Table.CLIQUES.getName() + ";");
 			// Get result set
-			final ResultSet rs = statement.getResultSet();
-			if (rs.next())
+			if (query.getResult().next())
 			{
 				// We have entries
 				do
 				{
 					// Compare
-					if (clique.equalsIgnoreCase(rs.getString(Field.CLIQUE_NAME
-							.getColumnName())))
+					if (clique.equalsIgnoreCase(query.getResult().getString(
+							Field.CLIQUE_NAME.getColumnName())))
 					{
-						id = rs.getInt(Field.CLIQUE_ID.getColumnName());
+						id = query.getResult().getInt(
+								Field.CLIQUE_ID.getColumnName());
+						break;
 					}
-				} while (rs.next());
+				} while (query.getResult().next());
 			}
 			// Close database objects
-			rs.close();
-			statement.close();
+			query.closeQuery();
 		}
 		catch (SQLException sql)
 		{
@@ -351,29 +352,26 @@ public class CliquesAPI
 		try
 		{
 			// Create query
-			final PreparedStatement statement = database
-					.prepare("SELECT * FROM " + Table.PLAYERS.getName()
-							+ " WHERE ucase("
-							+ Field.PLAYERNAME.getColumnName() + ")=?;");
-			statement.setString(1, name.toUpperCase());
+			final Query query = database.select("SELECT * FROM "
+					+ Table.PLAYERS.getName() + ";");
 			// Get result set
-			final ResultSet rs = statement.getResultSet();
-			if (rs.next())
+			if (query.getResult().next())
 			{
 				// We have entries
 				do
 				{
 					// Compare
-					if (name.equalsIgnoreCase(rs.getString(Field.PLAYERNAME
-							.getColumnName())))
+					if (name.equalsIgnoreCase(query.getResult().getString(
+							Field.PLAYERNAME.getColumnName())))
 					{
-						id = rs.getInt(Field.PLAYER_ID.getColumnName());
+						id = query.getResult().getInt(
+								Field.PLAYER_ID.getColumnName());
+						break;
 					}
-				} while (rs.next());
+				} while (query.getResult().next());
 			}
 			// Close database objects
-			rs.close();
-			statement.close();
+			query.closeQuery();
 		}
 		catch (SQLException sql)
 		{
@@ -431,6 +429,7 @@ public class CliquesAPI
 								+ ")");
 				pid.printStackTrace();
 			}
+			addPlayer(name);
 		}
 		// Parse string for the individual cliques
 		for (String clique : playerCliques.split(","))
@@ -439,6 +438,16 @@ public class CliquesAPI
 			{
 				int id = Integer.parseInt(clique);
 				set.add(getCliqueName(id));
+			}
+			catch (NumberFormatException num)
+			{
+				if (RootConfig.debugDatabase)
+				{
+					plugin.getLogger().warning(
+							"NFE on parsing player cliques on getCliquesOfPlayer(" + name
+									+ ")");
+					num.printStackTrace();
+				}
 			}
 			catch (CliqueIDNotFoundException cid)
 			{
@@ -494,10 +503,11 @@ public class CliquesAPI
 								+ name + ")");
 				pid.printStackTrace();
 			}
+			addPlayer(name);
 		}
 		return active;
 	}
-	
+
 	public static boolean playerIsMemberOfClique(String name, String clique)
 	{
 		final Set<String> cliques = getCliquesOfPlayer(name);
@@ -506,6 +516,13 @@ public class CliquesAPI
 			return true;
 		}
 		return false;
+	}
+
+	private static void addPlayer(String playername)
+	{
+		database.standardQuery("INSERT INTO " + Table.PLAYERS.getName() + " ("
+				+ Field.PLAYERNAME.getColumnName() + ") VALUES('" + playername
+				+ "');");
 	}
 
 	/**

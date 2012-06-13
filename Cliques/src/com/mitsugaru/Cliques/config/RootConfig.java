@@ -32,7 +32,7 @@ public class RootConfig
 		defaults.put("mysql.database", "minecraft");
 		defaults.put("mysql.user", "username");
 		defaults.put("mysql.password", "pass");
-		defaults.put("mysql.tablePrefix", "clique_");
+		defaults.put("mysql.tablePrefix", "cliques_");
 		defaults.put("mysql.import", false);
 		defaults.put("debug.api", false);
 		defaults.put("debug.database", false);
@@ -56,7 +56,7 @@ public class RootConfig
 		database = config.getString("mysql.database", "minecraft");
 		user = config.getString("mysql.user", "user");
 		password = config.getString("mysql.password", "password");
-		tablePrefix = config.getString("mysql.prefix", "ks_");
+		tablePrefix = config.getString("mysql.prefix", "cliques_");
 		importSQL = config.getBoolean("mysql.import", false);
 		loadSettings();
 	}

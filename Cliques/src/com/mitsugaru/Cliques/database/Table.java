@@ -5,7 +5,7 @@ import com.mitsugaru.Cliques.config.RootConfig;
 public enum Table
 {
 	PLAYERS(RootConfig.tablePrefix + "players"), CLIQUES(RootConfig.tablePrefix
-			+ "clique"), NEWS(RootConfig.tablePrefix + "news");
+			+ "cliques"), NEWS(RootConfig.tablePrefix + "news");
 
 	private String name;
 

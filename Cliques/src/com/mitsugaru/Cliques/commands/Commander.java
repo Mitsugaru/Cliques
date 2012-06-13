@@ -45,7 +45,7 @@ public class Commander implements CommandExecutor
 		try
 		{
 			final ValidCommands com = ValidCommands.valueOf(args[0]
-					.toLowerCase());
+					.toUpperCase());
 			return parseCommand(com, sender, args);
 		}
 		catch (IllegalArgumentException ia)
@@ -123,7 +123,7 @@ public class Commander implements CommandExecutor
 				try
 				{
 					final ValidCommands adminCom = ValidCommands
-							.valueOf(args[1].toLowerCase());
+							.valueOf(args[1].toUpperCase());
 					return parseAdminCommand(adminCom, sender, args);
 				}
 				catch (IllegalArgumentException ia)
@@ -171,6 +171,13 @@ public class Commander implements CommandExecutor
 		{
 			sender.sendMessage(ChatColor.YELLOW + Cliques.TAG
 					+ " Cannot create cliques as console");
+			return;
+		}
+		if (!PermissionHandler.has(sender, PermissionNode.CLIQUE_CREATE))
+		{
+			sender.sendMessage(ChatColor.RED + Cliques.TAG
+					+ " Lack permission: "
+					+ PermissionNode.CLIQUE_CREATE.getNode());
 			return;
 		}
 		final String clique = args[1];
@@ -276,11 +283,12 @@ public class Commander implements CommandExecutor
 		final Set<String> cliqueSet = CliquesAPI.getCliquesOfPlayer(target);
 		StringBuilder sb = new StringBuilder();
 		sb.append(ChatColor.GOLD + "Member: " + ChatColor.WHITE);
-		for(String clique : cliqueSet)
+		for (String clique : cliqueSet)
 		{
 			sb.append(clique + " ");
 		}
-		for(String cliqueLine : ChatPaginator.wordWrap(sb.toString(), ChatPaginator.AVERAGE_CHAT_PAGE_WIDTH))
+		for (String cliqueLine : ChatPaginator.wordWrap(sb.toString(),
+				ChatPaginator.AVERAGE_CHAT_PAGE_WIDTH))
 		{
 			sender.sendMessage(cliqueLine);
 		}
