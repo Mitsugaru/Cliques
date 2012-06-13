@@ -18,6 +18,8 @@ public class CliquesAPI
 {
 	private static Cliques plugin;
 	private static DatabaseHandler database;
+	public static final String GROUP_NAME_REGEX = "[\\p{Alnum}_[\\-]]*";
+	public static final String TAG_REGEX = "[A-Za-z0-9.)(/\\&-\\[\\]_]*";
 
 	public static void init(Cliques cliques)
 	{
@@ -40,6 +42,10 @@ public class CliquesAPI
 		boolean created = false;
 		// Check if it already exists
 		if (cliqueExists(clique))
+		{
+			return created;
+		}
+		if (!validCliqueName(clique))
 		{
 			return created;
 		}
@@ -444,8 +450,8 @@ public class CliquesAPI
 				if (RootConfig.debugDatabase)
 				{
 					plugin.getLogger().warning(
-							"NFE on parsing player cliques on getCliquesOfPlayer(" + name
-									+ ")");
+							"NFE on parsing player cliques on getCliquesOfPlayer("
+									+ name + ")");
 					num.printStackTrace();
 				}
 			}
@@ -512,6 +518,25 @@ public class CliquesAPI
 	{
 		final Set<String> cliques = getCliquesOfPlayer(name);
 		if (cliques.contains(clique))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean validCliqueName(String clique)
+	{
+		// Must be alphanumeric
+		if (clique.matches(GROUP_NAME_REGEX))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean validCliqueTag(String tag)
+	{
+		if (tag.matches(TAG_REGEX))
 		{
 			return true;
 		}

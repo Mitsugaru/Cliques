@@ -181,6 +181,12 @@ public class Commander implements CommandExecutor
 			return;
 		}
 		final String clique = args[1];
+		if (!CliquesAPI.validCliqueName(clique))
+		{
+			sender.sendMessage(ChatColor.YELLOW + Cliques.TAG
+					+ " Clique name must be alphanumeric.");
+			return;
+		}
 		if (CliquesAPI.cliqueExists(clique))
 		{
 			sender.sendMessage(ChatColor.YELLOW + Cliques.TAG + " Clique '"
@@ -192,7 +198,8 @@ public class Commander implements CommandExecutor
 		{
 			sender.sendMessage(ChatColor.GREEN + Cliques.TAG + " Clique '"
 					+ ChatColor.AQUA + clique + ChatColor.GREEN + "' created");
-			// TODO set player's current clique to new clique
+			// set player's current clique to new clique
+			CliquesManager.setMemberActiveClique(sender.getName(), clique);
 		}
 		else
 		{
