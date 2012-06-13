@@ -13,8 +13,8 @@ public class RootConfig
 	private Cliques plugin;
 	public String host, port, database, user, password;
 	public static String tablePrefix;
-	public boolean useMySQL, importSQL, cliquePublicOnCreate, cliquePVPGuard;
-	public static boolean debugDatabase;
+	public boolean useMySQL, importSQL, cliquePublicOnCreate, cliquePVPGuard, cliqueNewsOnEnter;
+	public static boolean debugDatabase, debugAPI;
 
 	public RootConfig(Cliques plugin)
 	{
@@ -25,6 +25,7 @@ public class RootConfig
 		// defaults
 		defaults.put("clique.publicOnCreate", false);
 		defaults.put("clique.pvpGuardOnCreate", true);
+		defaults.put("clique.newsOnEnter", true);
 		defaults.put("mysql.use", false);
 		defaults.put("mysql.host", "localhost");
 		defaults.put("mysql.port", 3306);
@@ -33,6 +34,7 @@ public class RootConfig
 		defaults.put("mysql.password", "pass");
 		defaults.put("mysql.tablePrefix", "clique_");
 		defaults.put("mysql.import", false);
+		defaults.put("debug.api", false);
 		defaults.put("debug.database", false);
 		defaults.put("version", plugin.getDescription().getVersion());
 		// Insert defaults into config file if they're not present
@@ -68,11 +70,18 @@ public class RootConfig
 	
 	private void loadSettings()
 	{
-		//TODO load settings
 		final ConfigurationSection config = plugin.getConfig();
+		/**
+		 * Clique
+		 */
 		cliquePublicOnCreate = config.getBoolean("clique.publicOnCreate", false);
 		cliquePVPGuard = config.getBoolean("clique.pvpGuardOnCreate", true);
+		cliqueNewsOnEnter = config.getBoolean("clique.newsOnEnter", true);
+		/**
+		 * Debug
+		 */
 		debugDatabase = config.getBoolean("debug.database", false);
+		debugAPI = config.getBoolean("debug.api", false);
 	}
 	
 	public void reloadConfig()

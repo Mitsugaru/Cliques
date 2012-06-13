@@ -2,14 +2,19 @@ package com.mitsugaru.Cliques.database;
 
 public enum Field
 {
-	PLAYERNAME(Table.PLAYERS, "playername", Type.STRING), CLIQUES(
-			Table.PLAYERS, "cliques", Type.STRING), CLIQUE_NAME(Table.CLIQUES,
+	PLAYERNAME(Table.PLAYERS, "playername", Type.STRING), PLAYER_CLIQUES(
+			Table.PLAYERS, "cliques", Type.STRING), PLAYER_ACTIVE(
+			Table.PLAYERS, "active", Type.INTEGER), CLIQUE_NAME(Table.CLIQUES,
 			"name", Type.STRING), CLIQUE_MEMBERS(Table.CLIQUES, "members",
 			Type.STRING), CLIQUE_PREFIX(Table.CLIQUES, "chatprefix",
 			Type.STRING), CLIQUE_INVITE(Table.CLIQUES, "invite", Type.INTEGER), CLIQUE_PVP(
-			Table.CLIQUES, "pvp", Type.INTEGER), NEWS_CLIQUE_ID(Table.NEWS, "cliqueID", Type.INTEGER), NEWS_AUTHOR(
-			Table.NEWS, "author", Type.STRING), NEWS_MESSAGE(Table.NEWS,
-			"message", Type.STRING);
+			Table.CLIQUES, "pvp", Type.INTEGER), CLIQUES_BROADCAST(
+			Table.CLIQUES, "broadcast", Type.INTEGER), NEWS_CLIQUE_ID(
+			Table.NEWS, "cliqueID", Type.INTEGER), NEWS_AUTHOR(Table.NEWS,
+			"author", Type.STRING), NEWS_MESSAGE(Table.NEWS, "message",
+			Type.STRING), PLAYER_ID(Table.PLAYERS, "id", Type.INTEGER), CLIQUE_ID(
+			Table.CLIQUES, "id", Type.INTEGER), NEWS_ID(Table.NEWS, "id",
+			Type.INTEGER);
 
 	private Table table;
 	private Type type;

@@ -4,8 +4,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.mitsugaru.Cliques.Cliques;
+import com.mitsugaru.Cliques.CliquesAPI;
 import com.mitsugaru.Cliques.permissions.PermissionHandler;
 import com.mitsugaru.Cliques.permissions.PermissionNode;
 
@@ -36,7 +38,16 @@ public class Commander implements CommandExecutor
 		}
 		catch (IllegalArgumentException ia)
 		{
+			if (args[0].equals("?"))
+			{
+				showHelp(sender);
+				return true;
+			}
 			// TODO tell sender invalid command
+		}
+		catch (ArrayIndexOutOfBoundsException aioob)
+		{
+			// Ignore?
 		}
 		return true;
 	}
@@ -55,6 +66,7 @@ public class Commander implements CommandExecutor
 			case CREATE:
 			{
 				// TODO create clique
+				createClique(sender, args);
 				break;
 			}
 			case JOIN:
@@ -104,6 +116,11 @@ public class Commander implements CommandExecutor
 				}
 				catch (IllegalArgumentException ia)
 				{
+					if (args[1].equals("?"))
+					{
+						// TODO show admin help
+						return true;
+					}
 					// TODO tell sender invalid admin command
 				}
 				catch (ArrayIndexOutOfBoundsException aioob)
@@ -123,16 +140,48 @@ public class Commander implements CommandExecutor
 			}
 			default:
 			{
-				if(args[0].equals("?"))
-				{
-					showHelp(sender);
-					return true;
-				}
 				// TODO bad command
 				return false;
 			}
 		}
 		return true;
+	}
+
+	private void createClique(CommandSender sender, String[] args)
+	{
+		if (args.length < 2)
+		{
+			sender.sendMessage(ChatColor.RED + Cliques.TAG
+					+ " Missing name of clique");
+			return;
+		}
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(ChatColor.YELLOW + Cliques.TAG
+					+ " Cannot create cliques as console");
+			return;
+		}
+		final String clique = args[1];
+		if (CliquesAPI.cliqueExists(clique))
+		{
+			sender.sendMessage(ChatColor.YELLOW + Cliques.TAG + " Clique '"
+					+ ChatColor.AQUA + clique + ChatColor.YELLOW
+					+ "' already exists");
+			return;
+		}
+		if(CliquesAPI.createClique(clique, sender.getName()))
+		{
+			sender.sendMessage(ChatColor.GREEN + Cliques.TAG + " Clique '"
+					+ ChatColor.AQUA + clique + ChatColor.GREEN
+					+ "' created");
+			// TODO set player's current clique to new clique
+		}
+		else
+		{
+			sender.sendMessage(ChatColor.RED + Cliques.TAG + " Clique '"
+					+ ChatColor.AQUA + clique + ChatColor.RED
+					+ "' failed to be created");
+		}
 	}
 
 	private boolean parseAdminCommand(ValidCommands com, CommandSender sender,
@@ -168,12 +217,11 @@ public class Commander implements CommandExecutor
 			}
 			case HELP:
 			{
-				//TODO show admin help
+				// TODO show admin help
 				break;
 			}
 			default:
 			{
-				
 				// TODO tell player invalid command
 			}
 		}

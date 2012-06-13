@@ -1,5 +1,7 @@
 package com.mitsugaru.Cliques.database;
 
+import java.sql.PreparedStatement;
+
 import com.mitsugaru.Cliques.Cliques;
 import com.mitsugaru.Cliques.config.RootConfig;
 import com.mitsugaru.Cliques.database.SQLibrary.MySQL;
@@ -42,14 +44,14 @@ public class DatabaseHandler
 				plugin.getLogger().info("Created players table");
 				mysql.createTable("CREATE TABLE "
 						+ Table.PLAYERS.getName()
-						+ " (id INT UNSIGNED NOT NULL AUTO_INCREMENT, playername varchar(32) NOT NULL, cliques TEXT, PRIMARY KEY(id), UNIQUE(playername));");
+						+ " (id INT UNSIGNED NOT NULL AUTO_INCREMENT, playername varchar(32) NOT NULL, cliques TEXT, active INT, PRIMARY KEY(id), UNIQUE(playername));");
 			}
 			if (!mysql.checkTable(Table.CLIQUES.getName()))
 			{
 				plugin.getLogger().info("Created cliques table");
 				mysql.createTable("CREATE TABLE "
 						+ Table.CLIQUES.getName()
-						+ " (id INT UNSIGNED NOT NULL AUTO_INCREMENT, name TEXT NOT NULL, members TEXT NOT NULL, chatprefix TEXT, invite INT NOT NULL, pvp INT NOT NULL, PRIMARY KEY(id), UNQIUE(name));");
+						+ " (id INT UNSIGNED NOT NULL AUTO_INCREMENT, name TEXT NOT NULL, members TEXT NOT NULL, chatprefix TEXT, invite INT NOT NULL, pvp INT NOT NULL, broadcast INT NOT NULL, PRIMARY KEY(id), UNQIUE(name));");
 			}
 			if (!mysql.checkTable(Table.NEWS.getName()))
 			{
@@ -68,14 +70,14 @@ public class DatabaseHandler
 				plugin.getLogger().info("Created players table");
 				sqlite.createTable("CREATE TABLE "
 						+ Table.PLAYERS.getName()
-						+ " (id INTEGER PRIMARY KEY, playername varchar(32) NOT NULL, cliques TEXT, UNIQUE(playername));");
+						+ " (id INTEGER PRIMARY KEY, playername varchar(32) NOT NULL, cliques TEXT, active INTEGER, UNIQUE(playername));");
 			}
 			if (!sqlite.checkTable(Table.CLIQUES.getName()))
 			{
 				plugin.getLogger().info("Created cliques table");
 				sqlite.createTable("CREATE TABLE "
 						+ Table.CLIQUES.getName()
-						+ " (id INTEGER PRIMARY KEY, name TEXT NOT NULL, members TEXT NOT NULL, chatprefix TEXT, invite INTEGER NOT NULL, pvp INTEGER NOT NULL, UNQIUE(name));");
+						+ " (id INTEGER PRIMARY KEY, name TEXT NOT NULL, members TEXT NOT NULL, chatprefix TEXT, invite INTEGER NOT NULL, pvp INTEGER NOT NULL, broadcast INTEGER NOT NULL, UNQIUE(name));");
 			}
 			if (!sqlite.checkTable(Table.NEWS.getName()))
 			{
@@ -91,7 +93,7 @@ public class DatabaseHandler
 	{
 		// TODO import
 	}
-	
+
 	public boolean checkConnection()
 	{
 		boolean connected = false;
@@ -151,6 +153,18 @@ public class DatabaseHandler
 		else
 		{
 			sqlite.createTable(query);
+		}
+	}
+
+	public PreparedStatement prepare(String statement)
+	{
+		if (useMySQL)
+		{
+			return mysql.prepare(statement);
+		}
+		else
+		{
+			return sqlite.prepare(statement);
 		}
 	}
 }

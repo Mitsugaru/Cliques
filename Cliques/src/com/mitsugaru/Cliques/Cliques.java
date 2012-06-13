@@ -11,7 +11,7 @@ public class Cliques extends JavaPlugin
 	public static final String TAG = "[Clique]";
 	private RootConfig config;
 	private DatabaseHandler database;
-
+	
 	@Override
 	public void onDisable()
 	{
@@ -38,5 +38,10 @@ public class Cliques extends JavaPlugin
 	public RootConfig getRootConfig()
 	{
 		return config;
+	}
+	
+	public DatabaseHandler getDatabaseHandler()
+	{
+		return database;
 	}
 }
