@@ -1,13 +1,17 @@
 package com.mitsugaru.Cliques.commands;
 
+import java.util.Set;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.ChatPaginator;
 
 import com.mitsugaru.Cliques.Cliques;
-import com.mitsugaru.Cliques.CliquesAPI;
+import com.mitsugaru.Cliques.api.CliquesAPI;
+import com.mitsugaru.Cliques.api.CliquesManager;
 import com.mitsugaru.Cliques.permissions.PermissionHandler;
 import com.mitsugaru.Cliques.permissions.PermissionNode;
 
@@ -28,6 +32,14 @@ public class Commander implements CommandExecutor
 		if (args.length == 0)
 		{
 			// show player's information
+			if (sender instanceof Player)
+			{
+				showPlayerInfo(sender);
+			}
+			else
+			{
+				showHelp(sender);
+			}
 			return true;
 		}
 		try
@@ -169,11 +181,10 @@ public class Commander implements CommandExecutor
 					+ "' already exists");
 			return;
 		}
-		if(CliquesAPI.createClique(clique, sender.getName()))
+		if (CliquesAPI.createClique(clique, sender.getName()))
 		{
 			sender.sendMessage(ChatColor.GREEN + Cliques.TAG + " Clique '"
-					+ ChatColor.AQUA + clique + ChatColor.GREEN
-					+ "' created");
+					+ ChatColor.AQUA + clique + ChatColor.GREEN + "' created");
 			// TODO set player's current clique to new clique
 		}
 		else
@@ -249,5 +260,29 @@ public class Commander implements CommandExecutor
 		// TODO show help based on permissions
 		sender.sendMessage(ChatColor.AQUA + "/clique help" + ChatColor.GOLD
 				+ " : Show help menu");
+	}
+
+	private void showPlayerInfo(CommandSender sender)
+	{
+		showPlayerInfo(sender, sender.getName());
+	}
+
+	private void showPlayerInfo(CommandSender sender, String target)
+	{
+		sender.sendMessage(ChatColor.WHITE + "=====" + ChatColor.AQUA
+				+ "Cliques" + ChatColor.WHITE + "=====");
+		sender.sendMessage(ChatColor.GOLD + "Active: " + ChatColor.WHITE
+				+ CliquesManager.getMemberActiveClique(target));
+		final Set<String> cliqueSet = CliquesAPI.getCliquesOfPlayer(target);
+		StringBuilder sb = new StringBuilder();
+		sb.append(ChatColor.GOLD + "Member: " + ChatColor.WHITE);
+		for(String clique : cliqueSet)
+		{
+			sb.append(clique + " ");
+		}
+		for(String cliqueLine : ChatPaginator.wordWrap(sb.toString(), ChatPaginator.AVERAGE_CHAT_PAGE_WIDTH))
+		{
+			sender.sendMessage(cliqueLine);
+		}
 	}
 }

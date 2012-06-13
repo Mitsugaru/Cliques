@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.mitsugaru.Cliques.CliquesManager;
+import com.mitsugaru.Cliques.api.CliquesManager;
 
 public class CliquePlayerListener implements Listener
 {

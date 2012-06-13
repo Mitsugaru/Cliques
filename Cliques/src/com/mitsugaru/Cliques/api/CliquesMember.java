@@ -1,9 +1,7 @@
-package com.mitsugaru.Cliques;
+package com.mitsugaru.Cliques.api;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import com.mitsugaru.Cliques.exception.CliqueIDNotFoundException;
 
 public class CliquesMember
 {
@@ -28,17 +26,33 @@ public class CliquesMember
 
 	public boolean listeningOnClique(String clique)
 	{
-		if (cliqueListen.contains(clique))
+		if (activeClique.equalsIgnoreCase(clique)
+				|| cliqueListen.contains(clique))
 		{
 			return true;
 		}
 		return false;
 	}
 
+	public boolean listenToClique(String clique)
+	{
+		boolean added = false;
+		if (activeClique.equalsIgnoreCase(clique)
+				|| cliqueListen.contains(clique))
+		{
+			// They are already listening
+			return true;
+		}
+		if (isMemberOfClique(clique))
+		{
+			cliqueListen.add(clique);
+		}
+		return added;
+	}
+
 	public boolean isMemberOfClique(String clique)
 	{
 		// Check if player is member of given clique
-		boolean member = false;
 		if (activeClique.equals(clique))
 		{
 			return true;
@@ -47,24 +61,6 @@ public class CliquesMember
 		{
 			return true;
 		}
-		try
-		{
-			final int cid = CliquesAPI.getCliqueID(clique);
-			final String cliques = CliquesAPI.getCliquesOfPlayer(playerName);
-			for (String c : cliques.split(","))
-			{
-				if (c.equals("" + cid))
-				{
-					member = true;
-					break;
-				}
-			}
-		}
-		catch (CliqueIDNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return member;
+		return CliquesAPI.playerIsMemberOfClique(playerName, clique);
 	}
 }

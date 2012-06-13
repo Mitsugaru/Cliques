@@ -1,9 +1,12 @@
-package com.mitsugaru.Cliques;
+package com.mitsugaru.Cliques.api;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.mitsugaru.Cliques.Cliques;
 import com.mitsugaru.Cliques.config.RootConfig;
 import com.mitsugaru.Cliques.database.DatabaseHandler;
 import com.mitsugaru.Cliques.database.Field;
@@ -66,14 +69,21 @@ public class CliquesAPI
 			// Add player to newly made clique
 			final int cliqueID = getCliqueID(clique);
 			final int playerID = getPlayerID(creator);
-			String playerCliques = getCliquesOfPlayer(creator);
-			if (playerCliques.equals(""))
+			final Set<String> playerSet = getCliquesOfPlayer(creator);
+			String playerCliques = "";
+			if (playerSet.isEmpty())
 			{
 				playerCliques = "" + cliqueID;
 			}
 			else
 			{
-				playerCliques += "," + cliqueID;
+				StringBuilder sb = new StringBuilder();
+				for (String s : playerSet)
+				{
+					sb.append(s + ",");
+				}
+				sb.append(cliqueID);
+				playerCliques = sb.toString();
 			}
 			final PreparedStatement update = database.prepare("UPDATE "
 					+ Table.PLAYERS.getName() + " SET "
@@ -244,6 +254,42 @@ public class CliquesAPI
 		return broadcast;
 	}
 
+	public static String getCliqueName(int id) throws CliqueIDNotFoundException
+	{
+		String name = "";
+		if (id < 0)
+		{
+			throw new CliqueIDNotFoundException("" + id);
+		}
+		try
+		{
+			final Query query = database.select("SELECT "
+					+ Field.CLIQUE_NAME.getColumnName() + " FROM "
+					+ Table.CLIQUES.getName() + " WHERE "
+					+ Field.CLIQUE_ID.getColumnName() + "=" + id + ";");
+			if (query.getResult().next())
+			{
+				name = query.getResult().getString(
+						Field.CLIQUE_NAME.getColumnName());
+			}
+			query.closeQuery();
+		}
+		catch (SQLException sql)
+		{
+			if (RootConfig.debugDatabase)
+			{
+				plugin.getLogger().warning(
+						"SQL Exception on getCliqueName(" + id + ")");
+				sql.printStackTrace();
+			}
+		}
+		if (name.equals(""))
+		{
+			throw new CliqueIDNotFoundException("" + id);
+		}
+		return name;
+	}
+
 	public static int getCliqueID(String clique)
 			throws CliqueIDNotFoundException
 	{
@@ -345,9 +391,10 @@ public class CliquesAPI
 		return id;
 	}
 
-	public static String getCliquesOfPlayer(String name)
+	public static Set<String> getCliquesOfPlayer(String name)
 	{
 		String playerCliques = "";
+		Set<String> set = new HashSet<String>();
 		try
 		{
 			final int playerID = getPlayerID(name);
@@ -385,7 +432,26 @@ public class CliquesAPI
 				pid.printStackTrace();
 			}
 		}
-		return playerCliques;
+		// Parse string for the individual cliques
+		for (String clique : playerCliques.split(","))
+		{
+			try
+			{
+				int id = Integer.parseInt(clique);
+				set.add(getCliqueName(id));
+			}
+			catch (CliqueIDNotFoundException cid)
+			{
+				if (RootConfig.debugDatabase)
+				{
+					plugin.getLogger().warning(
+							"PlayerID not found on getCliquesOfPlayer(" + name
+									+ ")");
+					cid.printStackTrace();
+				}
+			}
+		}
+		return set;
 	}
 
 	public static String getActiveCliqueForPlayer(String name)
@@ -414,7 +480,8 @@ public class CliquesAPI
 			if (RootConfig.debugDatabase)
 			{
 				plugin.getLogger().warning(
-						"SQL Exception on getPlayerID(" + name + ")");
+						"SQL Exception on getActiveCliqueForPlayer(" + name
+								+ ")");
 				sql.printStackTrace();
 			}
 		}
@@ -423,12 +490,22 @@ public class CliquesAPI
 			if (RootConfig.debugDatabase)
 			{
 				plugin.getLogger().warning(
-						"PlayerID not found on getCliquesOfPlayer(" + name
-								+ ")");
+						"PlayerID not found on getActiveCliqueForPlayer("
+								+ name + ")");
 				pid.printStackTrace();
 			}
 		}
 		return active;
+	}
+	
+	public static boolean playerIsMemberOfClique(String name, String clique)
+	{
+		final Set<String> cliques = getCliquesOfPlayer(name);
+		if (cliques.contains(clique))
+		{
+			return true;
+		}
+		return false;
 	}
 
 	/**
